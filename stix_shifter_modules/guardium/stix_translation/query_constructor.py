@@ -14,6 +14,10 @@ from stix_shifter_utils.utils.file_helper import read_json
 # REFERENCE_DATA_TYPES = {"QUERY_FROM_DATE": ["start"],
 #                        "QUERY_TO_DATE": ["end"],"OSUser":["%"],"DBUser":"newuser",
 #                        "SHOW_ALIASES":["TRUE","FALSE"],"REMOTE_SOURCE":["%"]}
+REFERENCE_DATA_TYPES = {"ServerIP": ["ipv4", "ipv6"],
+                        "Server": ["ipv4", "ipv6"],
+                        "Client IP": ["ipv4", "ipv6"]
+                        }
 DEFAULT_DAYS_BACK = 2
 
 
