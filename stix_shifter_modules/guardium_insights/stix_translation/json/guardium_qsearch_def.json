@@ -1,0 +1,49 @@
+{
+"Policy Violation": {
+	"ATA Open Cases": {
+      "category": "VIOLATION",
+      "startTime": {
+          "info": "START",
+          "default": "1970-07-01T00:00:10.000Z",
+          "transformer": "TimestampToGuardiumQS"
+      },
+      "endTime": {
+          "info": "STOP",
+          "default": "2019-07-01T00:00:10.000Z",
+          "transformer": "TimestampToGuardiumQS"
+      },
+
+      "filters": {
+        "Database": {
+          "info": "map",
+          "default": "*"
+        },
+        "DB User":{
+          "info": "map",
+          "default": "*"
+        },
+        "Server": {
+          "info": "map",
+          "default": "*"
+        },
+        "Client IP": {
+          "info": "map",
+          "default": "*"
+        },
+        "OS User": {
+          "info": "map",
+          "default": "*"
+        }        
+      },
+      "query":{
+      "Severity": {
+        "info": "map",
+        "default": "Low",
+        "transformer": "GuardiumMapSeverityNum",
+        "default_operator":">"
+        }
+      },
+      "fetchSize": "1000"
+    }
+  }
+}
