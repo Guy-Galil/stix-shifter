@@ -2,16 +2,13 @@
   "common": {
     "QUERY_FROM_DATE": "*",
     "QUERY_TO_DATE": "*",
-    "SHOW_ALIASES": "*",
-    "REMOTE_SOURCE": "*"
-
+    "DBUser":"*"
   },
   "maps": {
-    "DBUser": ["Threat Case:ATA Open Cases"],
-    "Database": ["Threat Case:ATA Open Cases"],
-    "ServerIP": ["Threat Case:ATA Open Cases"],
-    "Severity": ["Threat Case:ATA Open Cases"],
-    "OSUser": ["Threat Case:ATA Open Cases"]
+    "Database": ["Anomaly:ATA Open Cases","Violation:Policy Violations"],
+    "ServerIP": ["Anomaly:ATA Open Cases","Violation:Policy Violations"],
+    "Severity": ["Anomaly:ATA Open Cases","Violation:Policy Violations"],
+    "OSUser": ["Anomaly:ATA Open Cases","Violation:Policy Violations"]
   },
-  "defaultReports":["Threat Case:ATA Open Cases"]
+  "defaultReports":["Anomaly:ATA Open Cases","Violation:Policy Violations"]
 }

@@ -10,22 +10,26 @@ class ResultsConnector(BaseResultsConnector):
 
     def create_results_connection(self, search_id, offset, length):
         try:
-            min_range = offset
-            max_range = int(offset) + int(length)
-            # Grab the response, extract the response code, and convert it to readable json
-            response = self.api_client.get_search_results(search_id, min_range, max_range)
-            response_code = response.status_code
+            response = self.api_client.ping_data_source()
+            if response["success"]:
+                min_range = offset
+                max_range = int(offset) + int(length)
+                # Grab the response, extract the response code, and convert it to readable json
+                response = self.api_client.get_search_results(search_id, min_range, max_range)
+                response_code = response.status_code
 
-            # Construct a response object
-            return_obj = dict()
-            if response_code == 200:
-                return_obj['success'] = True
-                data = json.loads(response.content)
-                if type(data) == dict and 'ID' in data.keys() and 'Message' in data.keys() and data['ID'] == 0 and 'The Query did not retrieve any records' == data['Message']:
-                    data = []
-                return_obj['data'] = data
+                # Construct a response object
+                return_obj = dict()
+                if response_code == 200:
+                    return_obj['success'] = True
+                    data = json.loads(response.content)
+                    if type(data) == dict and 'ID' in data.keys() and 'Message' in data.keys() and data['ID'] == 0 and 'The Query did not retrieve any records' == data['Message']:
+                        data = []
+                    return_obj['data'] = data
+                else:
+                    ErrorResponder.fill_error(return_obj, response, ['message'])
             else:
-                ErrorResponder.fill_error(return_obj, response, ['message'])
+                ErrorResponder.fill_error(return_obj, response, ['message'])       
             return return_obj
         except Exception as err:
             self.logger.error('error when getting search results: {}'.format(err))

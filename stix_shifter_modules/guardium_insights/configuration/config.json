@@ -1,14 +1,14 @@
 {
     "connection": {
         "type": {
-            "displayName": "IBM® Guardium"
+            "displayName": "IBM® Guardium Insight"
         },
         "host": {
             "type": "text",
             "regex": "^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9_:/\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9][A-Za-z0-9_:/\\-]*[A-Za-z0-9])$"
         },
         "port": {
-            "default": 8443,
+            "default": 443,
             "type": "number"
         },
         "help": {
@@ -22,10 +22,6 @@
         "selfSignedCert": {
             "type": "password",
             "optional": true
-        },
-        "client_id": {
-            "type": "text",
-            "previous": "connection.options.client_id"
         },
         "client_secret": {
             "type": "password",

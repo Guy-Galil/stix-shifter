@@ -1,52 +1,82 @@
 {
-  "Threat Case": {
+  "Anomaly": {
     "ATA Open Cases": {
-      "reportName": "ATA Open Cases",
-      "indexFrom": "0",
-      "fetchSize": "1000",
-      "sortType": "asc",
-      "reportParameter": {
-        "QUERY_FROM_DATE": {
+      "report_id": "000000000000000000000901",
+      "offset": "0",
+      "fetch_size": "1000",
+      "runtime_parameter_list": [
+        {"key":"QUERY_FROM_DATE", 
           "info": "START",
           "default": "1970-07-01T00:00:10.000Z",
-          "transformer": "TimestampToGuardium"
+          "runtime_parameter_type":"DATE"
         },
-        "QUERY_TO_DATE": {
+        {"key":"QUERY_TO_DATE",
           "info": "STOP",
           "default": "2019-07-01T00:00:10.000Z",
-          "transformer": "TimestampToGuardium"
+          "runtime_parameter_type":"DATE"
         },
-        "SHOW_ALIASES": {
-          "info": "None",
-          "default": "TRUE"
-        },
-        "REMOTE_SOURCE": {
-          "info": "None",
-          "default": "%"
-        },
-
-        "OSUser": {
+        {"key":"OSUser",
           "info": "map",
           "default": "%"
         },
-        "DBUser": {
+        {"key":"DBUser",
           "info": "map",
           "default": "%"
         },
-        "Database": {
+        {"key":"Database",
           "info": "map",
           "default": "%"
         },
-        "ServerIP": {
+        {"key":"ServerIP",
           "info": "map",
           "default": "%"
         },
-        "Severity": {
+        {"key":"Severity",
           "info": "map",
           "default": "low",
           "transformer":"GuardiumMapSeverity"
         }
-      }
+      ]
+    }
+  },
+  "Violation": {
+    "Policy Violations": {
+      "report_id": "000000000000000000000902",
+      "offset": "0",
+      "fetch_size": "1000",
+      "runtime_parameter_list": [
+        {"key":"QUERY_FROM_DATE", 
+          "info": "START",
+          "default": "1970-07-01T00:00:10.000Z",
+          "runtime_parameter_type":"DATE"
+        },
+        {"key":"QUERY_TO_DATE",
+          "info": "STOP",
+          "default": "2019-07-01T00:00:10.000Z",
+          "runtime_parameter_type":"DATE"
+        },
+        {"key":"OSUser",
+          "info": "map",
+          "default": "%"
+        },
+        {"key":"DBUser",
+          "info": "map",
+          "default": "%"
+        },
+        {"key":"Database",
+          "info": "map",
+          "default": "%"
+        },
+        {"key":"ServerIP",
+          "info": "map",
+          "default": "%"
+        },
+        {"key":"Severity",
+          "info": "map",
+          "default": "low",
+          "transformer":"GuardiumMapSeverity"
+        }
+      ]
     }
   }
 }

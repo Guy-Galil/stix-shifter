@@ -6,23 +6,25 @@ import hashlib
 import datetime, re
 from stix_shifter_utils.utils import logger
 
-class GuardApiClient(object):
+class GINSApiClient(object):
 
-    def __init__ (self,client_id, url, secret, user, password):
+    def __init__ (self,url, secret):
         super().__init__()
         self.logger = logger.set_logger(__name__)
         self.url = url
         self.secret = secret
-        self.user = user
-        self.password = password
-        self.client_id=client_id
-        self.token_target = '/oauth/token'
-        self.report_target = '/restAPI/online_report'
-        self.qs_target = '/restAPI/quick_search'
-        self.fields_target = '/restAPI/fieldsTitles'
+	    #self.user = user
+        #self.password = password
+        #self.client_id=client_id
+        #self.token_target = '/oauth/token'
+        self.report_target = '/api/v2/reports/run/'
+        self.ping_target = '/api/v2/reports/categories'
+        #self.qs_target = '/restAPI/quick_search'
+        #self.fields_target = '/restAPI/fieldsTitles'
         self.fields = {}
-        self.get_token()
-
+        #self.get_token()
+        #-H  "accept: application/json" -H  "authorization: Basic ZDBhZGQ0ODctYzZkYi00NWFlLWJkMzYtOGU0ZmM5Y2FlZjAxOjcwOTNhMjY2LTQ5ODAtNDE0My1hNzgyLWY2ODk1MDVlMmY0MQ==" -H  "Content-Type: application/json" 
+        self.headers = {'Content-Type': 'application/json', 'accept':'application/json', 'Authorization': 'Basic {0}'.format(self.secret)}
         # -------------------------------------------------------------------------------
         # REPORT parameters
         # -------------------------------------------------------------------------------
@@ -78,7 +80,7 @@ class GuardApiClient(object):
         finally:
             file.close()     
 
-    def get_token(self):
+    #def get_token(self):
         # -------------------------------------------------------------------------------
         # Authentication
         # -------------------------------------------------------------------------------
@@ -87,102 +89,45 @@ class GuardApiClient(object):
         # print("secret="+self.secret)
         # print("user="+self.user)
         # print("password="+self.password)
-        response = self.request_token()
+        #response = self.request_token()
 
-        if self.validate_response(response, "token ", True):
-            self.access_token = response.json()['access_token']
+        #if self.validate_response(response, "token ", True):
+            #self.access_token = response.json()['access_token']
             # print("token="+ self.access_token)
-            self.headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {0}'.format(self.access_token)}
+            #self.headers = {'Content-Type': 'application/json', 'Authorization': 'Bearer {0}'.format(self.access_token)}
 
-    def request_token(self):
-        self.token_data = 'client_id={0}&grant_type=password&client_secret={1}&username={2}&password={3}'.format(
-            self.client_id, self.secret, self.user, self.password)
+    #def request_token(self):
+    #    self.token_data = 'client_id={0}&grant_type=password&client_secret={1}&username={2}&password={3}'.format(
+    #        self.client_id, self.secret, self.user, self.password)
             
-        response = requests.post(self.url + self.token_target, params=self.token_data, verify=False)
-        return response
+    #    response = requests.post(self.url + self.token_target, params=self.token_data, verify=False)
+    #    return response
+    def ping(self):
+        response = requests.get(self.url + self.ping_target, headers=self.headers, verify=False)
+        return self.validate_response(response,"ping", True)
 
     def validate_response(self, p_response, prefix, abort=False):
         if p_response.status_code != 200:
             if abort:
-                raise Exception(prefix+"request faild "+str(p_response.status_code)+"-"+p_response.reason)
+                raise Exception(prefix+" request faild "+str(p_response.status_code)+"-"+p_response.reason)
             return False
         return True    
 
-    def handle_report(self, report_name, params, index_from, fetch_size):
+    def handle_report(self, report_id, params, offset, fetch_size):
         # -------------------------------------------------------------------------------
         # REPORT
         # -------------------------------------------------------------------------------
-        results = ""
         #context().logger.debug('-------------------  ' + report_name + ' ----------------------')
-        params_set = {"reportName":"{0}".format(report_name), "indexFrom": "{0}".format(index_from), "fetchSize": "{0}".format(fetch_size), 
-        "reportParameter":params, "inputTZ":"UTC"}
-        json_dump = json.dumps(params_set)
-        rest_data = str(json.loads(json_dump))
-        response = requests.post(self.url+self.report_target, data=rest_data, headers=self.headers, verify=False)
-        results = response.json()
-        if not isinstance(results, list):
-            try:
-                errorCode = results["ErrorCode"]
-                # For compatibility with Guardium - 
-                # inputTZ parameter was aded after v11.3 
-                # so in case it does not exist execute the query without it
-                if errorCode ==  "27":
-                    params_set.pop("inputTZ")
-                    json_dump = json.dumps(params_set)
-                    rest_data = str(json.loads(json_dump))
-                    self.logger.warn("InputTZ not suppoerted - running query without it")
-                    response = requests.post(self.url+self.report_target, data=rest_data, headers=self.headers, verify=False)            
-            except:
-                pass        
+        params_set = {"offset": "{0}".format(offset), "fetch_size": "{0}".format(fetch_size), 
+        "runtime_parameter_list":params}
+        rest_data = json.dumps(params_set)
+        response = requests.post(self.url+self.report_target+report_id, data=rest_data, headers=self.headers, verify=False)
         return response
 
 
-    def handle_qs(self, category, params, filters, index_from, fetch_size):
-        # -------------------------------------------------------------------------------
-        # QS
-        # -------------------------------------------------------------------------------
-        # print("filters:" +filters)
-        if not self.fields:
-             self.get_field_titles()
-        
-        results = ""
-        params_set = {"category":"{0}".format(category), "startTime": "{0}".format(params["startTime"]), "endTime": "{0}".format(params["endTime"]), \
-             "fetchSize": "{0}".format(int(fetch_size-1)), "firstPosition": "{0}".format(int(index_from-1)), "inputTZ":"UTC"}
-        if filters:
-            params_set["filters"] = "{0}".format(filters)
-
-        all_params = {**params_set, **params}
-        json_dump = json.dumps(all_params)
-        rest_data = str(json.loads(json_dump))
-        response = requests.post(self.url+self.qs_target, data=rest_data,headers=self.headers,verify=False)
-        results = response.json()
-        if not isinstance(results, list):
-            try:
-                errorCode = results["ErrorCode"]
-                # For compatibility with Guardium - 
-                # inputTZ parameter was aded after v11.3 
-                # so in case it does not exist execute the query without it
-                if errorCode ==  "27":
-                    params_set.pop("inputTZ")
-                    json_dump = json.dumps(params_set)
-                    rest_data = str(json.loads(json_dump))
-                    self.logger.warn("InputTZ not suppoerted - running query without it")
-                    response = requests.post(self.url+self.qs_target, data=rest_data,headers=self.headers,verify=False)
-            except:
-                pass    
-        response._content = self.translate_response(json.loads(self.fields), json.loads(response.content))        
-        return response       
+      
     
-    def get_field_titles(self):
-        # get QS field titles from Guardium
-        response = requests.get(self.url+self.fields_target, headers=self.headers,verify=False)
-        try:
-            msg = json.loads(response.content)["Message"]
-        except Exception as e:
-            self.fields = json.dumps(json.loads(response.content)[0])
-            return
-        self.fields = msg
-
+    
     def translate_response(self, fields, results):
         # translate fields from numeric tags to field titles
         # set to lower case, replace white spaces with _

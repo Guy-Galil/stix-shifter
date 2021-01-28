@@ -1,4 +1,4 @@
-from .guard_utils import GuardApiClient
+from .guard_utils import GINSApiClient
 from stix_shifter_utils.stix_transmission.utils.RestApiClient import ResponseWrapper
 from stix_shifter_utils.utils import logger
 from requests.models import Response
@@ -12,12 +12,13 @@ class APIClient():
         # Placeholder client to allow dummy transmission calls.
         # Remove when implementing data source API client.
         url = "https://"+connection["host"]+":"+str(connection.get('port', ''))
-        self.client = GuardApiClient(connection["client_id"], url, connection["client_secret"],
-                                     configuration["auth"]["username"], configuration["auth"]["password"])
+        self.client = GINSApiClient(url, connection["client_secret"])
 
     def ping_data_source(self):
         # Pings the data source
-        if self.client.validate_response(self.client.request_token(), "", False):
+        #curl -k -X GET "https://staging.apps.lions-dev.os.fyre.ibm.com/api/v2/reports/categories" -H  "accept: application/json" -H  "authorization: Basic ZDBhZGQ0ODctYzZkYi00NWFlLWJkMzYtOGU0ZmM5Y2FlZjAxOjcwOTNhMjY2LTQ5ODAtNDE0My1hNzgyLWY2ODk1MDVlMmY0MQ==" -H  "Content-Type: application/json"
+
+        if self.client.ping():
             return {"code": 200, "success": True}
         else:
             return {"success": False}
@@ -48,8 +49,8 @@ class APIClient():
         respObj.code = "401"
         respObj.error_type = ""
         respObj.status_code = 401
-        # print("query="+query_expression)
-        if (self.client.access_token):
+        print("query="+query_expression)
+        if (self.client.secret):
             self.query = query_expression
             response = self.build_searchId()
             if (response != None):
@@ -79,11 +80,11 @@ class APIClient():
 
         if(self.query is None):
             raise IOError(3001, 
-            "Could not generate search id because 'query' or 'authorization token' or 'credential info' is not available.")
+            "Could not generate search id because 'query' or 'secret' is not available.")
 
         else:
-            id_str = '{"query": ' + json.dumps(self.query) + ', "target" : "' + self.client.url + '", "user":"'+self.client.user+'"}'
-            # print(id_str)
+            id_str = '{"query": ' + json.dumps(self.query) + ', "target" : "' + self.client.url + '"}'
+            #print(id_str)
             id_byt = id_str.encode('utf-8')
             s_id = base64.b64encode(id_byt).decode()
             self.search_id=s_id
@@ -92,21 +93,17 @@ class APIClient():
         return s_id
 
 
-    def get_search_results(self, search_id,  index_from=None, fetch_size=None):
+    def get_search_results(self, search_id,  offset=None, fetch_size=None):
             # Sends a GET request from guardium
         # This function calls Guardium to get data
         
-        if (self.client.access_token):
+        if (self.client.secret):
             self.search_id=search_id
             self.decode_searchId()
-            indx = int(index_from)+1
+            indx = int(offset)+1
             fsize = int(fetch_size)+1
-            if "reportName" in self.query:
-                response = self.client.handle_report(self.query["reportName"], self.query["reportParameter"], indx, fsize)
-                respObj = ResponseWrapper(response)
-            if "category" in self.query:
-                # print("TADA")
-                response = self.client.handle_qs(self.query["category"], self.query, "", indx, fsize)
+            if "report_id" in self.query:
+                response = self.client.handle_report(self.query["report_id"], self.query["runtime_parameter_list"], indx, fsize)
                 respObj = ResponseWrapper(response)
             status_code = response.status_code
 #           Though the connector gets the authorization token just before fetching the actual result
@@ -117,8 +114,8 @@ class APIClient():
                 error_code = error_msg.get('error', None)
                 if status_code == 401 and error_code == "invalid_token":
                     self.authorization = None
-                    if (self.client.get_token()):
-                        response = self.client.handle_report(self.query["report_name"], self.query["reportParameter"], index_from, fetch_size)
+                    if (self.client.secret):
+                        response = self.client.handle_report(self.query["report_id"], self.query["runtime_parameter_list"], offset, fetch_size)
                         status_code = response.response.status_code
                     else:
                         raise ValueError(3002, "Authorization Token not received ")
