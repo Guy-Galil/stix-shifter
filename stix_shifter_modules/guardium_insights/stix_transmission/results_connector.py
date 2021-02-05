@@ -22,9 +22,12 @@ class ResultsConnector(BaseResultsConnector):
                 return_obj = dict()
                 if response_code == 200:
                     return_obj['success'] = True
+                    #sdata = str(response.content)
+                    #sdata = sdata[2: len(sdata)-1]
                     data = json.loads(response.content)
                     if type(data) == dict and 'ID' in data.keys() and 'Message' in data.keys() and data['ID'] == 0 and 'The Query did not retrieve any records' == data['Message']:
                         data = []
+                    print(data)    
                     return_obj['data'] = data
                 else:
                     ErrorResponder.fill_error(return_obj, response, ['message'])

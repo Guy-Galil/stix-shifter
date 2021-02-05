@@ -1,5 +1,5 @@
 {
-  "DB User": [
+  "DB user": [
     {
       "key": "user-account.user_id",
       "object":"account" 
@@ -23,7 +23,7 @@
     }
    ]
   ,
- "OSUser": [
+ "OS user": [
     {
       "key": "user-account.login_name",
       "object":"account"
@@ -51,7 +51,7 @@
       "references": "src_ip"
     }
   ],
-   "client_ip": [
+   "Client IP": [
     {
       "key": "ipv4-addr.value",
       "object": "src_ip" 
@@ -64,21 +64,6 @@
       "key": "x-ibm-finding.src_ip_ref",
       "object": "finding", 
       "references": "src_ip" 
-    }
-  ],
- "server": [
-    {
-      "key": "ipv4-addr.value",
-      "object": "dst_ip" 
-    },
-    {
-      "key": "ipv6-addr.value",
-      "object": "dst_ip"
-    },
-    {
-      "key": "x-ibm-finding.dst_ip_ref",
-      "object": "finding", 
-      "references": "dst_ip" 
     }
   ],
  "Server IP": [
@@ -96,7 +81,22 @@
       "references": "dst_ip" 
     }
   ],
-  "db_type":[
+ "ServerIP": [
+    {
+      "key": "ipv4-addr.value",
+      "object": "dst_ip" 
+    },
+    {
+      "key": "ipv6-addr.value",
+      "object": "dst_ip"
+    },
+    {
+      "key": "x-ibm-finding.dst_ip_ref",
+      "object": "finding", 
+      "references": "dst_ip" 
+    }
+  ],
+  "Server database type":[
 	{
 	"key":"software.name",
 	"object":"software"
@@ -118,7 +118,7 @@
 	"references":"software"
 	}
   ],
-  "source_program":[
+  "Source application":[
 	{
 	"key":"software.name",
 	"object":"source_software"

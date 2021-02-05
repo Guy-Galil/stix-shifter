@@ -106,20 +106,7 @@ class APIClient():
                 response = self.client.handle_report(self.query["report_id"], self.query["runtime_parameter_list"], indx, fsize)
                 respObj = ResponseWrapper(response)
             status_code = response.status_code
-#           Though the connector gets the authorization token just before fetching the actual result
-#           there is a possibility that the token returned is only valid for a second and response_code = 401
-#           is returned.  Catch that situation (though remote) and process again.
-            if status_code != 200:
-                error_msg = json.loads(str(response.read(), 'utf-8'))
-                error_code = error_msg.get('error', None)
-                if status_code == 401 and error_code == "invalid_token":
-                    self.authorization = None
-                    if (self.client.secret):
-                        response = self.client.handle_report(self.query["report_id"], self.query["runtime_parameter_list"], offset, fetch_size)
-                        status_code = response.response.status_code
-                    else:
-                        raise ValueError(3002, "Authorization Token not received ")
-
+#          
 # Now START and STOP are optional -- A situation can occur that data set can be empty -- handle this situation here
             if status_code == 200:
 #
@@ -129,7 +116,7 @@ class APIClient():
                 # response_content = self.raiseErrorIfEmptyResult(response)
                 return response
             else:
-                raise ValueError(1020, "Error -- Status Code is NOT 200!")
+                raise ValueError(1020, "Error -- Status Code is {0}, error ={1}".format(status_code,json.loads(response.content)["error"]["message"]))
         else:
             raise ValueError(3002, "Authorization Token not received ")
     

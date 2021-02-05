@@ -122,51 +122,39 @@ class GINSApiClient(object):
         "runtime_parameter_list":params}
         rest_data = json.dumps(params_set)
         response = requests.post(self.url+self.report_target+report_id, data=rest_data, headers=self.headers, verify=False)
-        return response
+        if self.validate_response(response, "report", False):
+            return self.translate_response(response)
+        return response    
 
 
       
     
     
-    def translate_response(self, fields, results):
+    def translate_response(self, response):
         # translate fields from numeric tags to field titles
         # set to lower case, replace white spaces with _
-          res = []
-          for result in results:
-                num_rows = result["numRows"]
-                count = result["count"]
-                category = result["searchArgs"]["category"]
-                # print("total num rows " + str(num_rows) + " count " + str(count))
-                if num_rows > 0:
-                    res = []
-                    items = result["items"]
-                    # print(items)
-                    i = 0
-                    for item in items:
-                        res_item ={}
-                        for key, value in fields.items():
-                            try:
-                                val = key.split(";")
-                                if item.get(val[0]) is None :
-                                    continue
-                                if len(val) > 1:
-                                    item_value = ""
-                                    for val1 in val:
-                                        item_value = item_value + str(item[val1]) + " "
-                                    item_value = item_value.rstrip()
-                                else:
-                                    item_value = item[key]
-
-                                value = value.lower().replace(" ", "_")
-                                if value == "date_time" :
-                                    value = "timestamp"
-                                res_item[value]=item_value
-                                #print(str(value)+ '->'+str(res_item[value]))
-                            except Exception as e:
-                                print("ERROR: Category: "+ category +" key: " + key + " value: " + value)
-                                print(e)
-                        res.append(res_item)
-
-                return json.dumps(res)
-   
+          
+        sdata = str(response.content)
+        sdata = sdata[2: len(sdata)-1]
+        data = json.loads(sdata.split("\\n")[0])
+        field_headers = self.flatten_field_map(data["result"]["report_layout"]["report_headers"])
+        results = data["result"]["data"]
+        result1 = []
+        for result in results:
+            record = result["results"]
+            new_rec = dict()
+            for key, value in record.items():
+                if value :
+                    new_rec[field_headers[key]] = value
+                else:
+                    new_rec[field_headers[key]] = ''
+            result1.append(new_rec)
+        response._content = json.dumps(result1) 
+        return response
+    
+    def flatten_field_map(self, field_headers):
+        ret = dict()
+        for field_header in field_headers:
+            ret[str(field_header["sequence"])] = field_header["field_name"]["nls_value"]
+        return ret
 

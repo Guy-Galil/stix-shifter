@@ -91,7 +91,7 @@ class QueryStringPatternTranslator:
         regex4 = r"(START|STOP)"
         out_str = re.sub(regex4, r"'\1' : ", out_str, 0)
         regex5 = r"([Z\'\s]+STOP)"
-        out_str = re.sub(regex5, r"'} AND {'STOP", out_str, 0)
+        out_str = re.sub(regex5, r"Z'} AND {'STOP", out_str, 0)
         regex6 = r"(START|STOP)\'[\s\:t\']+"
         out_str = re.sub(regex6, r"\1' : '", out_str, 0)
 
