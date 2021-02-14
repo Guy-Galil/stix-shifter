@@ -136,24 +136,29 @@ class GINSApiClient(object):
           
         sdata = str(response.content)
         sdata = sdata[2: len(sdata)-1]
+        regex = r"hadar.*\(1\)"
+        out_str = re.sub(regex, "ggg", sdata, 0)
+        sdata = out_str 
         data = json.loads(sdata.split("\\n")[0])
         field_headers = self.flatten_field_map(data["result"]["report_layout"]["report_headers"])
-        results = data["result"]["data"]
         result1 = []
-        for result in results:
-            record = result["results"]
-            new_rec = dict()
-            for key, value in record.items():
-                if value :
-                    new_rec[field_headers[key]] = value
-                else:
-                    new_rec[field_headers[key]] = ''
-            result1.append(new_rec)
+        if "data" in data["result"]:
+            results = data["result"]["data"]    
+            for result in results:
+                record = result["results"]
+                new_rec = dict()
+                for key, value in record.items():
+                    if value :
+                      new_rec[field_headers[key]] = value
+                    else:
+                       new_rec[field_headers[key]] = ''
+                result1.append(new_rec)
         response._content = json.dumps(result1) 
         return response
     
     def flatten_field_map(self, field_headers):
         ret = dict()
+        print(str(field_headers))
         for field_header in field_headers:
             ret[str(field_header["sequence"])] = field_header["field_name"]["nls_value"]
         return ret

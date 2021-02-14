@@ -40,17 +40,6 @@
   "Magnitude": {
     "key": "x-guardium.magnitude"
   },
-  "SourceIpV4": [
-    {
-      "key": "ipv4-addr.value",
-      "object": "src_ip"
-    },
-    {
-      "key": "network-traffic.src_ref",
-      "object": "nt",
-      "references": "src_ip"
-    }
-  ],
    "Client IP": [
     {
       "key": "ipv4-addr.value",
@@ -96,7 +85,7 @@
       "references": "dst_ip" 
     }
   ],
-  "Server database type":[
+  "Database type":[
 	{
 	"key":"software.name",
 	"object":"software"
@@ -146,10 +135,13 @@
       "cybox": false
     }
   ],
-  "Create Date": [
+  "Policy violation (local timestamp)": [
     {
       "key": "first_observed",
-      "transformer": "GuardiumToTimestamp",
+      "cybox": false
+    },
+    {
+      "key": "last_observed",
       "cybox": false
     }
   ],
@@ -167,48 +159,23 @@
       "cybox": false
     }
   ],
-  "Url": {
-    "key": "url.value"
-  },
-  "FileName": {
-    "key": "file.name"
-  },
-  "Payload": {
-    "key": "artifact.payload_bin"
-  },
-  "DestinationPort": {
+  "Server port":[ {
     "key": "network-traffic.dst_port",
-    "object": "nt",
+    "object": "dst_port",
     "transformer": "ToInteger"
   },
+    {
+      "key": "x-ibm-finding.dst_port_ref",
+      "object": "finding", 
+      "references": "dst_port" 
+    }
+  ],
   "SourcePort": {
     "key": "network-traffic.src_port",
     "object": "nt",
     "transformer": "ToInteger"
   },
-  "NetworkProtocol": {
-    "key": "network-traffic.protocols",
-    "object": "nt",
-    "transformer": "ToLowercaseArray"
-  },
-  "DomainName": {
-    "key": "domain-name.value"
-  },
-  "Process": {
-    "Path": [
-      {
-        "object": "proc",
-        "key": "process.command_line"
-      }
-    ],
-    "Pid": [
-      {
-        "object": "proc",
-        "key": "process.id"
-      }
-    ]
-  },
-  "violation":{
+  "Rule name":{
 	"key":"x-ibm-finding.name",
         "object":"finding"
   },
@@ -216,11 +183,11 @@
 	"key":"x-ibm-finding.name",
         "object":"finding"
   },
-  "details":{
+  "Full SQL":{
 	"key":"x-ibm-finding.details",
         "object":"finding"
   },
- "database":{
+ "Database name":{
 	"key":"x-ibm-finding.dst_device",
         "object":"finding"
   },

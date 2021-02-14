@@ -24,19 +24,10 @@
             "optional": true
         },
         "client_secret": {
-            "type": "password",
-            "previous": "connection.options.client_secret"
+            "type": "password"
         }
     },
     "configuration": {
-        "auth": {
-          "type" : "fields",
-          "username": {
-              "type": "password"
-          },
-          "password": {
-              "type": "password"
-          }
-        }
+       
     }
 }

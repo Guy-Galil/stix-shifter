@@ -31,15 +31,6 @@
         }
     },
     "configuration": {
-        "auth": {
-            "username": {
-                "label": "Username",
-                "description": "Username with access to the search API"
-            },
-            "password": {
-                "label": "Password",
-                "description": "Password of the user with access to the search API"
-            }
-        }
+        
     }
 }
