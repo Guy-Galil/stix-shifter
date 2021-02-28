@@ -1,0 +1,72 @@
+{
+"Anomaly": {
+    "ATA Open Cases": {
+      "report_id": "000000000000000000000901",
+      "offset": "0",
+      "fetch_size": "1000",
+      "sortType": "asc",
+      "runtime_parameter_list": {
+        "QUERY_FROM_DATE": {
+          "info": "START",
+          "default": "1970-07-01T00:00:10.000Z",
+          "runtime_parameter_type":"DATE"
+        },
+        "QUERY_TO_DATE": {
+          "info": "STOP",
+          "default": "2019-07-01T00:00:10.000Z",
+          "runtime_parameter_type":"DATE"
+        }
+      }
+    }
+  },
+  "Violation": {
+    "Policy Violations": {
+      "report_id": "601fe6c41cb60c120f2ae187",
+      "offset": "0",
+      "fetch_size": "1000",
+      "sortType": "asc",
+      "runtime_parameter_list": {
+        "QUERY_FROM_DATE": {
+          "info": "START",
+          "default": "1970-07-01T00:00:10.000Z",
+          "runtime_parameter_type":"DATE"
+        },
+        "QUERY_TO_DATE": {
+          "info": "STOP",
+          "default": "2019-07-01T00:00:10.000Z",
+          "runtime_parameter_type":"DATE"
+        },
+        "IS_ADVANCED__OSUser": {
+          "info": "map",
+          "default": "%",
+          "runtime_parameter_type":"STRING"
+        },
+        "IS_ADVANCED__DBUserName": {
+          "info": "map",
+          "default": "%",
+          "runtime_parameter_type":"STRING"
+        },
+        "IS_ADVANCED__DatabaseName": {
+          "info": "map",
+          "default": "%",
+          "runtime_parameter_type":"STRING"
+        },
+        "IS_ADVANCED__ServerIP": {
+          "info": "map",
+          "default": "%",
+          "runtime_parameter_type":"STRING"
+        },
+        "IS_ADVANCED__ClientID": {
+          "info": "map",
+          "default": "%",
+          "runtime_parameter_type":"STRING"
+        },
+        "IS_ADVANCED__Severity": {
+          "info": "map",
+          "default": "low",
+          "runtime_parameter_type":"INTEGER"
+        }
+      }
+    }
+  }
+}
